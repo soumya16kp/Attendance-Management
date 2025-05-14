@@ -1,0 +1,286 @@
+/* Card Styling */
+.card {
+    position: relative; /* Ensures internal positioning */
+    margin: 20px;
+    background: white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    width: 330px;
+    text-align: center;
+    overflow: hidden; /* Prevents expansion */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+}
+
+/* Subject Header */
+.subject-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+}
+
+.subject {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+    transition: color 0.3s ease;
+}
+
+/* Dropdown Menu */
+.menu-container {
+    position: relative;
+}
+
+.menu-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 20px;
+    color: #777;
+    transition: color 0.3s ease;
+}
+
+.menu-btn:hover {
+    color: #333;
+}
+
+.dropdown-menu {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    min-width: 150px;
+    overflow: hidden;
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-menu button {
+    background: none;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    font-size: 1rem;
+    transition: background 0.2s ease-in-out;
+}
+
+.dropdown-menu button:hover {
+    background: #467cf0;
+    color: white;
+}
+
+/* Scrollable Schedule Container */
+.schedule-container {
+    min-height: 180px;
+    max-height: 200px;
+    overflow-y: auto;
+    border-top: 2px solid #ddd;
+    padding-top: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: #ccc transparent;
+}
+
+.schedule-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.schedule-container::-webkit-scrollbar-thumb {
+    background-color: #bbb;
+    border-radius: 10px;
+}
+
+/* Schedule Items */
+.schedule-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+    position: relative;
+    transition: background 0.2s ease-in-out;
+}
+
+.schedule-item:hover {
+    background: #f9f9f9;
+}
+
+/* Class Info */
+.class-info {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.day {
+    font-weight: 500;
+    color: #555;
+}
+
+.time {
+    font-weight: 600;
+    color: #222;
+}
+
+/* Status Dropdown */
+.status {
+    padding: 6px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s ease-in-out;
+}
+
+.status.attended { background: #4CAF50; color: white; }
+.status.absent { background: #FF9800; color: white; }
+.status.canceled { background: #E63946; color: white; }
+.status.pending { background: #9E9E9E; color: white; }
+
+/* Actions (Edit & Delete Icons) */
+.actions {
+    display: flex;
+    gap: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.schedule-item:hover .actions {
+    opacity: 1;
+}
+
+.icon-btn {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: #777;
+    transition: color 0.2s ease-in-out;
+}
+
+.icon-btn:hover {
+    color: #333;
+}
+
+/* Add Button */
+.add-btn {
+    margin-top: 15px;
+    padding: 12px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.2s ease-in-out;
+}
+
+.add-btn:hover {
+    background-color: #0056b3;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    width: 400px;
+    text-align: center;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.input-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+.BelowBar{
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.input-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #444;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.time-picker {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.modal-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.save-btn, .close-btn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.save-btn {
+    background: #007bff;
+    color: white;
+}
+
+.close-btn {
+    background: #ccc;
+    color: black;
+}
+
+.save-btn:hover { background: #0056b3; }
+.close-btn:hover { background: #999; }

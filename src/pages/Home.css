@@ -1,0 +1,101 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #1E1E1E;
+    color: white;
+}
+
+/* 📌 Home Page Layout */
+.home-container {
+    display: flex;
+    height: 100vh;
+}
+
+/* 🎨 Sidebar Styling */
+.sidebar {
+    width: 200px;
+    background: rgba(30, 30, 30, 0.9);
+    backdrop-filter: blur(8px);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 4px 0px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 🏷 Sidebar Title */
+.sidebar-title {
+    font-size: 2rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #FFD700;
+}
+
+/* 🔗 Sidebar Menu */
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.2rem;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    border-radius: 8px;
+}
+
+.sidebar-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #FFD700;
+    transform: scale(1.05);
+}
+
+/* ✨ Sidebar Icons */
+.icon {
+    font-size: 1.4rem;
+    color: #FFD700;
+}
+
+/* 📜 Main Content */
+.content {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    align-items: flex-start;
+    overflow-y: auto;
+}
+
+.month-selector select {
+  background-color: #2a2a2a;
+  color: white;
+  border: 1px solid #555;
+  border-radius: 6px;
+  padding: 0.4rem 0.8rem;
+  font-size: 1rem;
+  appearance: none;
+  cursor: pointer;
+}
+
+.month-selector {
+  margin-bottom: 1.5rem;
+  font-size: 1.05rem;
+}
+
+.month-selector select:focus {
+  outline: none;
+  border-color: #ffd700;
+  box-shadow: 0 0 4px #ffd70088;
+}

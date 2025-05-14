@@ -1,0 +1,100 @@
+/* Base Container */
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  background-color: #1a1a1a;
+  min-height: 100vh;
+  color: #f0f0f0;
+}
+
+/* Summary Cards */
+.dashboard-summary {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+  max-width: 900px;
+}
+
+.summary-card {
+  background-color: #2a2a2a;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+  text-align: center;
+  flex: 1;
+  min-width: 180px;
+  color: #f0f0f0;
+}
+
+.summary-card h3 {
+  font-size: 18px;
+  color: #cccccc;
+  margin-bottom: 8px;
+}
+
+.summary-card p {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.attendance-percentage {
+  color: #4caf50;
+}
+
+.absent-percentage {
+  color: #e63946;
+}
+
+.net-attendance {
+  color: #2196f3;
+}
+
+/* Dashboard Cards */
+.dashboard-card {
+  background-color: #2a2a2a;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+  width: 100%;
+  max-width: 900px;
+  text-align: center;
+  color: #f0f0f0;
+}
+
+.dashboard-header {
+  font-size: 20px;
+  font-weight: bold;
+  color: #f0f0f0;
+  margin-bottom: 15px;
+}
+
+/* Chart Container */
+.chart-container {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  padding: 20px;
+}
+
+/* Hover Effects (Optional) */
+.summary-card:hover,
+.dashboard-card:hover {
+  transform: translateY(-2px);
+  transition: transform 0.2s ease;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dashboard-summary {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .summary-card {
+    width: 80%;
+  }
+}

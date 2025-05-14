@@ -1,0 +1,180 @@
+:root {
+  --bg-color: #232222;
+  --text-color: white;
+  --border-color: #555;
+  --border-color-light: #444;
+  --accent-green: #42f132;
+  --accent-red: #f44336;
+  --accent-yellow:#dfbf1f;
+  --default-gray: #2a2a2a;
+}
+
+.history-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  color: var(--text-color);
+  padding: 2rem;
+  font-family: Arial, sans-serif;
+  font-size: 1.2rem;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.month-selector {
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.month-selector select {
+  background-color: #2a2a2a;
+  color: white;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0.4rem 0.8rem;
+  font-size: 1rem;
+  appearance: none;
+  cursor: pointer;
+}
+
+.month-selector :focus {
+  outline: none;
+  border-color: #ffd700;
+  box-shadow: 0 0 4px #ffd70088;
+}
+.Infor {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.info-item span {
+  color: var(--text-color);
+  font-size: 1rem;
+}
+
+.history-grid-wrapper {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: auto;
+  width:100%
+}
+
+.history-grid {
+  display: grid;
+  grid-template-columns: 250px auto;
+  width: max-content;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+}
+
+.subject-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.subject-cell {
+  padding: 0.75rem;
+  font-weight: bold;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-color);
+}
+
+.subject-label {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--border-color-light);
+  min-height: 47px;
+  display: flex;
+  align-items: center;
+  background-color: var(--bg-color);
+  max-height: 47px;
+  overflow-y: hidden;
+}
+
+.dates-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.date-row,
+.attendance-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.date-cell {
+  min-width: 38px;
+  height: 47px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.9rem;
+  border-left: 1px solid var(--border-color-light);
+  border-bottom: 1px solid var(--border-color);
+  background-color: #2a2a2a;
+}
+
+.attendance-box {
+  min-width: 38px;
+  height: 47px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid var(--border-color-light);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.attendance-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid #333;
+  background-color: var(--default-gray);
+  transition: transform 0.2s ease;
+}
+
+.attendance-dot.attended {
+  background-color: var(--accent-green);
+}
+
+.attendance-dot.absent {
+  background-color: var(--accent-red);
+}
+.attendance-dot.canceled{
+  background-color: var(--accent-yellow);
+}
+.attendance-dot.none {
+  background-color: var(--default-gray);
+}
+
+.attendance-dot:hover {
+  transform: scale(1.1);
+  cursor: pointer;
+}
+
+/* Mobile tweaks */
+@media (max-width: 768px) {
+  .subject-column {
+    min-width: 120px;
+  }
+
+  .date-cell,
+  .attendance-box {
+    min-width: 28px;
+    height: 28px;
+    font-size: 0.75rem;
+  }
+
+  .attendance-dot {
+    width: 14px;
+    height: 14px;
+  }
+}

@@ -1,0 +1,27 @@
+/* LogoutBtn.css */
+
+.logout-btn {
+    background-color: #dc3545; /* Red color */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+  }
+  
+  .logout-btn:hover {
+    background-color: #c82333; /* Darker red on hover */
+  }
+  
+  .logout-btn:active {
+    background-color: #a71d2a;
+  }
+  
+  .logout-btn:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(220, 53, 69, 0.5);
+  }
+  
