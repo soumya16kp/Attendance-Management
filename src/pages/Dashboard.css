@@ -4,7 +4,7 @@
   flex-direction: column;
   align-items: center;
   gap: 20px;
-  padding: 20px;
+  padding: 16px;
   background-color: #1a1a1a;
   min-height: 100vh;
   color: #f0f0f0;
@@ -17,27 +17,29 @@
   gap: 20px;
   width: 100%;
   max-width: 900px;
+  flex-wrap: wrap;
 }
 
 .summary-card {
   background-color: #2a2a2a;
-  padding: 20px;
+  padding: 16px;
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
   text-align: center;
   flex: 1;
   min-width: 180px;
+  max-width: 250px;
   color: #f0f0f0;
 }
 
 .summary-card h3 {
-  font-size: 18px;
+  font-size: 16px;
   color: #cccccc;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .summary-card p {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: bold;
 }
 
@@ -56,7 +58,7 @@
 /* Dashboard Cards */
 .dashboard-card {
   background-color: #2a2a2a;
-  padding: 20px;
+  padding: 16px;
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
   width: 100%;
@@ -66,21 +68,23 @@
 }
 
 .dashboard-header {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: bold;
   color: #f0f0f0;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
 }
 
 /* Chart Container */
 .chart-container {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-around;
   align-items: center;
-  padding: 20px;
+  flex-wrap: wrap;
+  padding: 16px;
+  gap: 16px;
 }
 
-/* Hover Effects (Optional) */
+/* Hover Effects */
 .summary-card:hover,
 .dashboard-card:hover {
   transform: translateY(-2px);
@@ -92,9 +96,57 @@
   .dashboard-summary {
     flex-direction: column;
     align-items: center;
+    gap: 16px;
   }
 
-  .summary-card {
-    width: 80%;
+  .summary-card,
+  .dashboard-card {
+    width: 90%;
+  }
+
+  .dashboard-header {
+    font-size: 16px;
+  }
+
+  .summary-card h3 {
+    font-size: 14px;
+  }
+
+  .summary-card p {
+    font-size: 20px;
+  }
+
+  .chart-container {
+    flex-direction: column;
+    padding: 12px;
+  }
+
+  /* Hide subject name on mobile view */
+  .dashboard-card .subject-name {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-container {
+    padding: 12px;
+  }
+
+  .summary-card,
+  .dashboard-card {
+    padding: 12px;
+  }
+
+  .dashboard-header {
+    font-size: 15px;
+  }
+
+  .summary-card p {
+    font-size: 18px;
+  }
+
+  /* Hide subject name on small mobile view */
+  .dashboard-card .subject-name {
+    display: none;
   }
 }

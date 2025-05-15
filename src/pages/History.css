@@ -5,7 +5,7 @@
   --border-color-light: #444;
   --accent-green: #42f132;
   --accent-red: #f44336;
-  --accent-yellow:#dfbf1f;
+  --accent-yellow: #dfbf1f;
   --default-gray: #2a2a2a;
 }
 
@@ -24,6 +24,7 @@
 .month-selector {
   margin-bottom: 1.5rem;
   font-size: 1.5rem;
+  align-items: center;
 }
 
 .month-selector select {
@@ -42,12 +43,15 @@
   border-color: #ffd700;
   box-shadow: 0 0 4px #ffd70088;
 }
+
 .Infor {
   display: flex;
   gap: 1.5rem;
   align-items: center;
-  margin-bottom: 1rem;
+  margin: 1rem;
   font-size: 1rem;
+  justify-content: center;
+  align-items: center;
 }
 
 .info-item {
@@ -65,7 +69,7 @@
   flex: 1;
   overflow-x: auto;
   overflow-y: auto;
-  width:100%
+  width: 100%;
 }
 
 .history-grid {
@@ -148,9 +152,11 @@
 .attendance-dot.absent {
   background-color: var(--accent-red);
 }
-.attendance-dot.canceled{
+
+.attendance-dot.canceled {
   background-color: var(--accent-yellow);
 }
+
 .attendance-dot.none {
   background-color: var(--default-gray);
 }
@@ -160,21 +166,83 @@
   cursor: pointer;
 }
 
-/* Mobile tweaks */
+/* Mobile tweaks for horizontal layout */
 @media (max-width: 768px) {
-  .subject-column {
-    min-width: 120px;
+  .history-grid {
+    grid-template-columns: 1fr; /* Make grid one column on mobile */
+    grid-template-rows: auto;
+    width: max-content;
   }
 
-  .date-cell,
+  .subject-column {
+    min-width: auto; /* Remove min-width for subject column */
+    flex-direction: row; /* Align subjects horizontally */
+    margin-left: 50px;
+  }
+
+  .subject-cell {
+    display: none; /* Hide subject column header */
+  }
+
+  .subject-label {
+    display: inline-block;
+    font-size: small;
+    border-bottom: 1px solid var(--border-color-light);
+    background-color: var(--bg-color);
+    max-height: 60px ;
+    min-width: 100px;
+    max-width:100px; 
+    text-align: center;
+    overflow-y: hidden;
+  }
+
+  .dates-section {
+    flex-direction: row; /* Change to row layout */
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .date-row,
+  .attendance-row {
+    flex-direction: column;
+  }
+
+  .date-cell {
+    min-width: 50px; /* Adjust width for smaller screens */
+    height: 50px;
+    font-size: 0.8rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-left: 1px solid var(--border-color-light);
+  
+    background-color: #2a2a2a;
+  }
+
   .attendance-box {
-    min-width: 28px;
-    height: 28px;
-    font-size: 0.75rem;
+    min-width: 100px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-left: 1px solid var(--border-color-light);
+    border-bottom: 1px solid var(--border-color);
   }
 
   .attendance-dot {
     width: 14px;
     height: 14px;
   }
+
+  .attendance-row {
+    display: flex;
+    justify-content: space-around;
+  }
+
+ 
+
+  .date-cell {
+    font-size: 0.75rem;
+  }
+
 }

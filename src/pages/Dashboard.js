@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Legend } from "recharts";
 import { UseChecker } from "../context/CheckerContext";
 import "./Dashboard.css";
@@ -37,6 +37,21 @@ const Dashboard = () => {
     const attendanceData = processAttendanceData();
     const pieData = processPieData();
 
+    // State for screen width detection
+    const [isMobile, setIsMobile] = useState(false);
+
+    // Update screen size on load and resize
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 768); // Set mobile breakpoint at 768px
+        };
+
+        window.addEventListener("resize", handleResize);
+        handleResize(); // Run it on mount as well
+
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
     return (
         <div className="dashboard-container">
             {/* Summary Section */}
@@ -60,7 +75,10 @@ const Dashboard = () => {
                 <h2 className="dashboard-header">Attendance Overview</h2>
                 <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={attendanceData} barGap={8}>
-                        <XAxis dataKey="name" stroke="#555" />
+                        {/* Conditionally render the XAxis based on screen width */}
+                        {!isMobile && (
+                            <XAxis dataKey="name" stroke="#555" />
+                        )}
                         <YAxis />
                         <Tooltip cursor={{ fill: "#444444" }} />
                         <Legend />

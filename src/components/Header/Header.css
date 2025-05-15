@@ -131,3 +131,9 @@
 .logout-btn:hover {
     background: #b33a2f;
 }
+@media (max-width: 768px){
+    .header{
+        padding:8px;
+        font-size: 400;
+    }
+}
