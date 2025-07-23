@@ -17,7 +17,7 @@ function getLastSunday() {
 
 async function ReloadSchedule(userId, subjects) {
     try {
-        // Fetch user document
+        
         const response = await databases.listDocuments(
             conf.appwriteDatabaseId,
             conf.appwriteUserCollectionId,
@@ -33,7 +33,6 @@ async function ReloadSchedule(userId, subjects) {
         }
         let lastSunday = getLastSunday();
 
-        // console.log("Last Updated:", lastUpdated, "Last Sunday:", lastSunday);
 
         if (!lastUpdated || (new Date() - lastUpdated) / (1000 * 60 * 60 * 24) >= 7) {
             console.log("Updating schedules...");
