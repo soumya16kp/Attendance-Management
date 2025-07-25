@@ -1,5 +1,5 @@
 import "./Home.css";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import authService from "../appwrite/auth";
 import { useNavigate } from "react-router-dom";
 import { UseChecker } from "../context/CheckerContext";
@@ -10,7 +10,6 @@ import { faTachometerAlt, faHistory } from "@fortawesome/free-solid-svg-icons";
 
 function Home() {
     const { subjects, fetchSubjects } = UseChecker();
-    const [shouldReload, setShouldReload] = useState(false);
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
 
@@ -37,7 +36,7 @@ function Home() {
     reloadAndFetch();
     const intervalId = setInterval(reloadAndFetch, 36000000); 
     return () => clearInterval(intervalId);
-}, []);
+}, [user,subjects]);
 
     return (
         <div className="home-container">

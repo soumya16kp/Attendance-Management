@@ -1,15 +1,17 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import "./ClassSchedCard.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash, faEllipsisV } from "@fortawesome/free-solid-svg-icons";
-import CircularProgress from "./Calculator"
+import CircularProgress from "./Calculator";
 import appwriteService from "../appwrite/config";
 import authService from "../appwrite/auth";
 import { UseChecker } from "../context/CheckerContext";
+import { Query } from "appwrite";
 
 const ClassScheduleCard = ({ subject }) => {
     const { fetchSubjects } = UseChecker();
     const [schedule, setSchedule] = useState([]);
+    const [filteredSchedule, setFilteredSchedule] = useState([]);
     const [status, setStatus] = useState("closed");
     const [showModal, setShowModal] = useState(false);
     const [newDay, setNewDay] = useState("");
@@ -19,10 +21,13 @@ const ClassScheduleCard = ({ subject }) => {
     const [showOptions, setShowOptions] = useState(false);
     const [rename, setRename] = useState(false);
     const [newName, setNewName] = useState(subject.Subject);
-    const [showUpcoming, setShowUpcoming] = useState(true); 
+    const [showUpcoming, setShowUpcoming] = useState(true);
+    const [showAllPast, setShowAllPast] = useState(false);
 
-    const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-    const statusOptions = ["Attended","Absent", "Canceled", "Pending"];
+    const statusOptions = ["Attended", "Absent", "Canceled", "Pending"];
+    const now = new Date();
+    const lastWeekStart = new Date();
+    lastWeekStart.setDate(now.getDate() - 7);
 
     useEffect(() => {
         if (subject?.Schedule) {
@@ -30,19 +35,58 @@ const ClassScheduleCard = ({ subject }) => {
             const sortedSchedule = parsedSchedule.sort((a, b) => new Date(a.day) - new Date(b.day));
             setSchedule(sortedSchedule);
         }
-        
     }, [subject]);
-    const FindUser =async()=>{
-        const session= await authService.getCurrentUser();
-         return session?.$id;
-    }
-    const now = new Date();
-    
 
-    const filteredSchedule = schedule.filter(entry => {
-        const classDate = new Date(entry.day);
-        return showUpcoming ? classDate >= now : classDate < now;
-    });
+    useEffect(() => {
+        const fetchSchedule = async () => {
+            const userId = await FindUser();
+            if (!userId) return;
+
+            if (showAllPast) {
+                try {
+                    const response = await appwriteService.getLastWeek([
+                        Query.equal("userId", userId)
+                    ]);
+                    const allDocs = response?.documents || [];
+
+
+                    const allEntries = allDocs.flatMap(doc =>
+                        doc.Schedule.map(entry => ({
+                            ...JSON.parse(entry),
+                            subjectName: doc.Subject
+                        }))
+                    );
+                     console.log(response.documemts );
+                    const pastForThisSubject = allEntries.filter(e =>
+                        e.subjectName === subject.Subject &&
+                        new Date(e.day) < now
+                    );
+
+                    const sorted = pastForThisSubject.sort((a, b) => new Date(a.day) - new Date(b.day));
+                    setFilteredSchedule(sorted);
+                } catch (error) {
+                    console.error("Error fetching all past classes:", error);
+                }
+            } else if (showUpcoming) {
+                const upcoming = schedule.filter(e => new Date(e.day) >= now);
+                setFilteredSchedule(upcoming);
+            } else {
+    
+                const lastWeekOnly = schedule.filter(e => {
+                    const d = new Date(e.day);
+                    return d >= lastWeekStart && d < now;
+                });
+                setFilteredSchedule(lastWeekOnly);
+            }
+        };
+
+        fetchSchedule();
+    }, [schedule, showUpcoming, showAllPast]);
+
+    const FindUser = async () => {
+        const session = await authService.getCurrentUser();
+        return session?.$id;
+    };
 
     const handleSaveClass = async () => {
         if (newDay && startTime && endTime) {
@@ -82,7 +126,7 @@ const ClassScheduleCard = ({ subject }) => {
 
             setSchedule(updatedSchedule);
             setStatus(updatedStatus);
-            const userid= await FindUser();
+            const userid = await FindUser();
             fetchSubjects(userid);
         } catch (error) {
             console.error("Error updating schedule:", error);
@@ -108,7 +152,7 @@ const ClassScheduleCard = ({ subject }) => {
             });
 
             setRename(false);
-            const userid= await FindUser();
+            const userid = await FindUser();
             fetchSubjects(userid);
         } catch (error) {
             console.error("Error renaming subject:", error);
@@ -118,7 +162,7 @@ const ClassScheduleCard = ({ subject }) => {
     const handleDeleteSubject = async () => {
         try {
             await appwriteService.deleteSubject(subject.$id);
-            const userid= await FindUser();
+            const userid = await FindUser();
             fetchSubjects(userid);
         } catch (error) {
             console.error("Error deleting subject:", error);
@@ -158,28 +202,31 @@ const ClassScheduleCard = ({ subject }) => {
                         <div className="dropdown-menu">
                             <button onClick={() => setRename(true)}>Rename</button>
                             <button onClick={handleDeleteSubject}>Delete</button>
-                            <button>Mark as Completed</button>
+                            <button onClick={() => {
+                                setShowUpcoming(!showUpcoming);
+                                setShowAllPast(false);
+                            }}>
+                                {showUpcoming ? "Show Last Week" : "Show Upcoming"}
+                            </button>
                         </div>
                     )}
                 </div>
             </div>
 
-
             <div className="schedule-container">
                 <div className="schedule">
-                    {schedule.length > 0 ? (
-                        schedule.map((entry, index) => (
+                    {filteredSchedule.length > 0 ? (
+                        filteredSchedule.map((entry, index) => (
                             <div key={index} className="schedule-item">
                                 <div className="class-info">
                                     <span className="day">{entry.day}</span>
                                     <span className="time">{entry.time}</span>
                                 </div>
 
-
                                 <select
                                     className={`status ${entry.status.toLowerCase()}`}
                                     value={entry.status}
-                                    onChange={(e) => handleStatusChange(index,e.target.value)}
+                                    onChange={(e) => handleStatusChange(index, e.target.value)}
                                 >
                                     {statusOptions.map((status) => (
                                         <option key={status} value={status}>{status}</option>
@@ -188,7 +235,7 @@ const ClassScheduleCard = ({ subject }) => {
 
                                 <div className="actions">
                                     <button className="icon-btn edit-btn" onClick={() => handleEditClass(index)}>
-                                       <FontAwesomeIcon icon={faEdit} />
+                                        <FontAwesomeIcon icon={faEdit} />
                                     </button>
                                     <button className="icon-btn delete-btn" onClick={() => handleDeleteClass(index)}>
                                         <FontAwesomeIcon icon={faTrash} />
@@ -201,55 +248,62 @@ const ClassScheduleCard = ({ subject }) => {
                     )}
                 </div>
             </div>
+
             <div className="BelowBar">
                 <button className="add-btn" onClick={() => setShowModal(true)}>+ Add Class</button>
-                <CircularProgress subjectid={subject.$id}/>
+                {<button
+                    className="secondary-btn"
+                    onClick={() => {
+                        setShowAllPast(true);
+                        setShowUpcoming(false);
+                    }}
+                >
+                    Show All Past Classes
+                </button>}
+                <CircularProgress subjectid={subject.$id} />
             </div>
-            
-
 
             {showModal && (
-          <div className="modal">
-              <div className="modal-content">
-                  <h2>{editIndex !== null ? "Edit Class" : "Add Class"}</h2>
+                <div className="modal">
+                    <div className="modal-content">
+                        <h2>{editIndex !== null ? "Edit Class" : "Add Class"}</h2>
 
-                  <div className="input-group">
-                      <label>Select Date:</label>
-                      <input
-                          type="date"
-                          value={newDay}
-                          onChange={(e) => setNewDay(e.target.value)}
-                      />
-                  </div>
+                        <div className="input-group">
+                            <label>Select Date:</label>
+                            <input
+                                type="date"
+                                value={newDay}
+                                onChange={(e) => setNewDay(e.target.value)}
+                            />
+                        </div>
 
-                  <div className="input-group time-picker">
-                      <div>
-                          <label>Start Time:</label>
-                          <input
-                              type="time"
-                              value={startTime}
-                              onChange={(e) => setStartTime(e.target.value)}
-                          />
-                      </div>
+                        <div className="input-group time-picker">
+                            <div>
+                                <label>Start Time:</label>
+                                <input
+                                    type="time"
+                                    value={startTime}
+                                    onChange={(e) => setStartTime(e.target.value)}
+                                />
+                            </div>
 
-                      <div>
-                          <label>End Time:</label>
-                          <input
-                              type="time"
-                              value={endTime}
-                              onChange={(e) => setEndTime(e.target.value)}
-                          />
-                      </div>
-                  </div>
+                            <div>
+                                <label>End Time:</label>
+                                <input
+                                    type="time"
+                                    value={endTime}
+                                    onChange={(e) => setEndTime(e.target.value)}
+                                />
+                            </div>
+                        </div>
 
-                  <div className="modal-buttons">
-                      <button className="save-btn" onClick={handleSaveClass}>Save</button>
-                      <button className="close-btn" onClick={closeModal}>Cancel</button>
-                  </div>
-              </div>
-          </div>
-      )}
-
+                        <div className="modal-buttons">
+                            <button className="save-btn" onClick={handleSaveClass}>Save</button>
+                            <button className="close-btn" onClick={closeModal}>Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

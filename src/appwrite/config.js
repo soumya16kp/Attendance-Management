@@ -73,6 +73,20 @@ export class Service {
             return false;
         }
     }
+    async getLastWeek(queries) {
+        try {
+            return await this.databases.listDocuments(
+                conf.appwriteDatabaseId,
+                conf.appwriteUserCollectionId,
+                queries,
+            );
+            
+        } catch (error) {
+            console.log("Appwrite service :: getSubjects error", error);
+            return false;
+        }
+    }
+    
     
 }
 

@@ -23,22 +23,21 @@ async function ReloadSchedule(userId, subjects) {
             conf.appwriteUserCollectionId,
             [Query.equal("userId", userId)]
         );
-
         const userDoc = response.documents[0];
         let lastUpdated;
         if (userDoc && userDoc.lastWeek) {
             lastUpdated = new Date(userDoc.lastWeek);
+            console.log("The lastWeek ",userDoc.lastWeek);
         } else {
             lastUpdated = null;
         }
         let lastSunday = getLastSunday();
 
-
-        if (!lastUpdated || (new Date() - lastUpdated) / (1000 * 60 * 60 * 24) >= 7) {
+        if (!lastUpdated || (new Date() - lastUpdated) /(1000 * 60 * 60 * 24) >= 7) {
             console.log("Updating schedules...");
 
         for (const subject of subjects) {
-   
+            
          if (!subject.Schedule || subject.Schedule.length === 0) {
                 console.warn(`No schedule for ${subject.Subject}, skipping.`);
                 continue;
@@ -73,13 +72,13 @@ async function ReloadSchedule(userId, subjects) {
                 }
 
                 const updatedSchedules = parsedSchedules.map((entry) => {
-                    const newDate = new Date(entry.day);
+                    const newDate = new Date(entry.day); 
                     newDate.setDate(newDate.getDate() + 7);
                     entry.day = newDate.toISOString().split("T")[0];
+                    entry.status= "Pending";
                     return JSON.stringify(entry);
                 });
 
-                // Update the document with the new schedules
                 await databases.updateDocument(
                     conf.appwriteDatabaseId,
                     conf.appwriteCollectionId, 
@@ -88,7 +87,6 @@ async function ReloadSchedule(userId, subjects) {
                 );
             }
 
-            // Update lastWeek to prevent multiple executions
             const newLastWeek = new Date(lastSunday);
             const localDate = newLastWeek.toLocaleDateString('en-CA');
 
