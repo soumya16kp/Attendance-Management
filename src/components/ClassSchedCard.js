@@ -41,25 +41,29 @@ const ClassScheduleCard = ({ subject }) => {
         const fetchSchedule = async () => {
             const userId = await FindUser();
             if (!userId) return;
-
             if (showAllPast) {
                 try {
                     const response = await appwriteService.getLastWeek([
                         Query.equal("userId", userId)
                     ]);
-                    const allDocs = response?.documents || [];
+                    
+                    const lastday = new Date(response?.documents?.[0]?.lastWeek);
 
+                    console.log("The Last Day is ",lastday );
+                    const scheduleResponse = await appwriteService.getSubjects([Query.equal("userId", userId)]);
+                    // console.log(scheduleResponse);
+                    const alldata= scheduleResponse.documents
 
-                    const allEntries = allDocs.flatMap(doc =>
+                    const allEntries = alldata.flatMap(doc =>
                         doc.Schedule.map(entry => ({
                             ...JSON.parse(entry),
                             subjectName: doc.Subject
                         }))
                     );
-                     console.log(response.documemts );
+
                     const pastForThisSubject = allEntries.filter(e =>
                         e.subjectName === subject.Subject &&
-                        new Date(e.day) < now
+                        new Date(e.day) < lastday
                     );
 
                     const sorted = pastForThisSubject.sort((a, b) => new Date(a.day) - new Date(b.day));
@@ -214,6 +218,28 @@ const ClassScheduleCard = ({ subject }) => {
             </div>
 
             <div className="schedule-container">
+                <div>
+                    {showUpcoming ? 
+                    <button
+                        className="secondary-btn"
+                        onClick={() => {
+                            setShowAllPast(true);
+                            setShowUpcoming(false);
+                        }}
+                    >
+                        Show All Past Classes
+                    </button>:
+                        <button
+                        className="secondary-btn"
+                        onClick={() => {
+                            setShowAllPast(false);
+                            setShowUpcoming(true);
+                        }}
+                    >
+                        Show Upcoming Classes
+                    </button>
+                    }
+                </div>
                 <div className="schedule">
                     {filteredSchedule.length > 0 ? (
                         filteredSchedule.map((entry, index) => (
@@ -251,15 +277,7 @@ const ClassScheduleCard = ({ subject }) => {
 
             <div className="BelowBar">
                 <button className="add-btn" onClick={() => setShowModal(true)}>+ Add Class</button>
-                {<button
-                    className="secondary-btn"
-                    onClick={() => {
-                        setShowAllPast(true);
-                        setShowUpcoming(false);
-                    }}
-                >
-                    Show All Past Classes
-                </button>}
+                
                 <CircularProgress subjectid={subject.$id} />
             </div>
 

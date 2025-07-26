@@ -7,7 +7,7 @@
     border-radius: 12px;
     padding: 20px;
     width: 330px;
-    height: 400px;
+    height: 450px;
     text-align: center;
     overflow: hidden; /* Prevents expansion */
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -92,10 +92,10 @@
 
 /* Scrollable Schedule Container */
 .schedule-container {
-    min-height: 180px;
-    max-height: 200px;
+    height: 250px;
     overflow-y: auto;
     border-top: 2px solid #ddd;
+    border-bottom: 2px solid #ddd;
     padding-top: 10px;
     scrollbar-width: thin;
     scrollbar-color: #ccc transparent;
@@ -276,9 +276,8 @@
 .secondary-btn {
     background-color: #444;
     color: #fff;
-    padding: 2px;
+    padding: 6px;
     margin-left: 10px;
-    height: 50px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
