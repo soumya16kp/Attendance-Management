@@ -1,3 +1,16 @@
+
+This project includes a demo user account for testing and preview purposes only.
+
+All data under the demo account is public and may be reset or cleared periodically.
+
+Please do not use any real or sensitive personal information when using the demo credentials.
+
+For full access and a personalized experience, consider registering a new account.
+
+You can use the following credentials to log in as a demo user for testing purposes:
+**Email:** one@gmail.com  
+**Password:** 123456789
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
