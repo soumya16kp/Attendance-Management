@@ -36,8 +36,11 @@ async function ReloadSchedule(userId, subjects) {
         if (!lastUpdated || (new Date() - lastUpdated) /(1000 * 60 * 60 * 24) >= 7) {
             console.log("Updating schedules...");
 
+        const lastWeekStart = new Date(lastSunday);
+        lastWeekStart.setDate(lastWeekStart.getDate() - 7);
+
         for (const subject of subjects) {
-            
+
          if (!subject.Schedule || subject.Schedule.length === 0) {
                 console.warn(`No schedule for ${subject.Subject}, skipping.`);
                 continue;
@@ -58,20 +61,27 @@ async function ReloadSchedule(userId, subjects) {
                 })
                 .filter(entry => entry !== null);
 
+                const lastWeekSchedules = parsedSchedules.filter(entry => {
+                    const date = new Date(entry.day);
+                    return date >= lastWeekStart ;
+                });
+
+
+
                 if (parsedSchedules.length === 0) {
                     console.warn(`All schedule entries invalid for ${subject.Subject}, skipping.`);
                     continue;
                 }
 
-                let latestScheduleDate = new Date(parsedSchedules[parsedSchedules.length - 1].day);
+                let latestScheduleDate = new Date(lastWeekSchedules[lastWeekSchedules.length - 1].day);
                 latestScheduleDate.setDate(latestScheduleDate.getDate() + 7);
 
-                if (parsedSchedules.some(entry => entry.day === latestScheduleDate.toISOString().split("T")[0])) {
+                if (lastWeekSchedules.some(entry => entry.day === latestScheduleDate.toISOString().split("T")[0])) {
                     console.log(`Skipping duplicate schedule for ${subject.Subject}`);
                     continue;
                 }
 
-                const updatedSchedules = parsedSchedules.map((entry) => {
+                const updatedSchedules = lastWeekSchedules.map((entry) => {
                     const newDate = new Date(entry.day); 
                     newDate.setDate(newDate.getDate() + 7);
                     entry.day = newDate.toISOString().split("T")[0];

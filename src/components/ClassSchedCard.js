@@ -49,7 +49,7 @@ const ClassScheduleCard = ({ subject }) => {
                     
                     const lastday = new Date(response?.documents?.[0]?.lastWeek);
 
-                    console.log("The Last Day is ",lastday );
+                    console.log("The Last Day is ",lastday);
                     const scheduleResponse = await appwriteService.getSubjects([Query.equal("userId", userId)]);
                     // console.log(scheduleResponse);
                     const alldata= scheduleResponse.documents
