@@ -12,6 +12,7 @@ const ClassScheduleCard = ({ subject }) => {
     const { fetchSubjects } = UseChecker();
     const [schedule, setSchedule] = useState([]);
     const [filteredSchedule, setFilteredSchedule] = useState([]);
+    const [allParsedEntries, setAllParsedEntries] = useState([]);
     const [status, setStatus] = useState("closed");
     const [showModal, setShowModal] = useState(false);
     const [newDay, setNewDay] = useState("");
@@ -30,77 +31,102 @@ const ClassScheduleCard = ({ subject }) => {
     lastWeekStart.setDate(now.getDate() - 7);
 
     useEffect(() => {
-        if (subject?.Schedule) {
-            const parsedSchedule = subject.Schedule.map(entry => JSON.parse(entry));
-            const sortedSchedule = parsedSchedule.sort((a, b) => new Date(a.day) - new Date(b.day));
-            setSchedule(sortedSchedule);
-        }
-    }, [subject]);
-
-    useEffect(() => {
-        const fetchSchedule = async () => {
+        const fetchInitialData = async () => {
             const userId = await FindUser();
             if (!userId) return;
-            if (showAllPast) {
-                try {
-                    const response = await appwriteService.getLastWeek([
-                        Query.equal("userId", userId)
-                    ]);
-                    
-                    const lastday = new Date(response?.documents?.[0]?.lastWeek);
 
-                    console.log("The Last Day is ",lastday);
-                    const scheduleResponse = await appwriteService.getSubjects([Query.equal("userId", userId)]);
-                    // console.log(scheduleResponse);
-                    const alldata= scheduleResponse.documents
+            try {
+                const subjectsResponse = await appwriteService.getSubjects([
+                    Query.equal("userId", userId)
+                ]);
+                const allSubjects = subjectsResponse.documents;
 
-                    const allEntries = alldata.flatMap(doc =>
-                        doc.Schedule.map(entry => ({
-                            ...JSON.parse(entry),
-                            subjectName: doc.Subject
-                        }))
-                    );
+                const entries = allSubjects.flatMap(doc =>
+                    doc.Schedule.map(entry => ({
+                        ...JSON.parse(entry),
+                        subjectName: doc.Subject
+                    }))
+                );
 
-                    const pastForThisSubject = allEntries.filter(e =>
-                        e.subjectName === subject.Subject &&
-                        new Date(e.day) < lastday
-                    );
+                setAllParsedEntries(entries);
 
-                    const sorted = pastForThisSubject.sort((a, b) => new Date(a.day) - new Date(b.day));
-                    setFilteredSchedule(sorted);
-                } catch (error) {
-                    console.error("Error fetching all past classes:", error);
+                const currentSubject = allSubjects.find(doc => doc.$id === subject.$id);
+                if (currentSubject) {
+                    const parsed = currentSubject.Schedule.map(e => JSON.parse(e));
+                    setSchedule(parsed.sort((a, b) => new Date(a.day) - new Date(b.day)));
                 }
-            } else if (showUpcoming) {
-                const upcoming = schedule.filter(e => new Date(e.day) >= now);
-                setFilteredSchedule(upcoming);
-            } else {
-    
-                const lastWeekOnly = schedule.filter(e => {
-                    const d = new Date(e.day);
-                    return d >= lastWeekStart && d < now;
-                });
-                setFilteredSchedule(lastWeekOnly);
+            } catch (error) {
+                console.error("Error fetching subjects:", error);
             }
         };
 
-        fetchSchedule();
-    }, [schedule, showUpcoming, showAllPast]);
+        fetchInitialData();
+    }, [subject.$id]);
+
+    // filtering Schedule Logic
+    useEffect(() => {
+        if (showAllPast) {
+            const pastForThisSubject = allParsedEntries.filter(e =>
+                e.subjectName === subject.Subject && new Date(e.day) < now
+            );
+            setFilteredSchedule(pastForThisSubject.sort((a, b) => new Date(a.day) - new Date(b.day)));
+        } else if (showUpcoming) {
+            setFilteredSchedule(schedule.filter(e => new Date(e.day) >= now));
+        } else {
+            const lastWeekOnly = schedule.filter(e => {
+                const d = new Date(e.day);
+                return d >= lastWeekStart && d < now;
+            });
+            setFilteredSchedule(lastWeekOnly);
+        }
+        console.log("The filtered Schedule",filter)
+    }, [showAllPast, showUpcoming, schedule, allParsedEntries]);
 
     const FindUser = async () => {
         const session = await authService.getCurrentUser();
         return session?.$id;
     };
+    const handleEditClass = (index) => {
+        setEditIndex(index);
+        setNewDay(schedule[index].day);
+        const [start, end] = schedule[index].time.split(" - ");
+        setStartTime(start);
+        setEndTime(end);
+        setShowModal(true);
+    };
 
     const handleSaveClass = async () => {
         if (newDay && startTime && endTime) {
             const updatedSchedule = [...schedule];
-            const newEntry = { day: newDay, time: `${startTime} - ${endTime}`, status: "Pending" };
+            const newEntry = {
+                day: newDay,
+                time: `${startTime} - ${endTime}`,
+                status: "Pending"
+            };
 
             if (editIndex !== null) {
+            
+                const oldEntry = schedule[editIndex];
                 updatedSchedule[editIndex] = newEntry;
+
+                setAllParsedEntries(prev =>
+                    prev.map(entry => {
+                        if (
+                            entry.subjectName === subject.Subject &&
+                            entry.day === oldEntry.day &&
+                            entry.time === oldEntry.time
+                        ) {
+                            return { ...newEntry, subjectName: subject.Subject };
+                        }
+                        return entry;
+                    })
+                );
             } else {
                 updatedSchedule.push(newEntry);
+                setAllParsedEntries(prev => [
+                    ...prev,
+                    { ...newEntry, subjectName: subject.Subject }
+                ]);
             }
 
             await updateSubject(updatedSchedule, status);
@@ -109,13 +135,38 @@ const ClassScheduleCard = ({ subject }) => {
     };
 
     const handleDeleteClass = async (index) => {
+        const removedEntry = schedule[index];
         const updatedSchedule = schedule.filter((_, i) => i !== index);
         await updateSubject(updatedSchedule, status);
+
+        setAllParsedEntries(prev =>
+            prev.filter(entry =>
+                !(
+                    entry.subjectName === subject.Subject &&
+                    entry.day === removedEntry.day &&
+                    entry.time === removedEntry.time
+                )
+            )
+        );
+        setEditIndex(null);
     };
 
     const handleStatusChange = async (index, newStatus) => {
-        const updatedSchedule = [...schedule];
-        updatedSchedule[index].status = newStatus;
+            const updatedSchedule = [...schedule];
+            updatedSchedule[index].status = newStatus;
+            
+            const newAllEntries = allParsedEntries.map(entry => {
+                if (
+                    entry.subjectName === subject.Subject &&
+                    entry.day === updatedSchedule[index].day &&
+                    entry.time === updatedSchedule[index].time
+                ) {
+                    return { ...entry, status: newStatus };
+                }
+                return entry;
+            });
+        setAllParsedEntries(newAllEntries);
+            
         await updateSubject(updatedSchedule, status);
     };
 
@@ -135,15 +186,6 @@ const ClassScheduleCard = ({ subject }) => {
         } catch (error) {
             console.error("Error updating schedule:", error);
         }
-    };
-
-    const handleEditClass = (index) => {
-        setEditIndex(index);
-        setNewDay(schedule[index].day);
-        const [start, end] = schedule[index].time.split(" - ");
-        setStartTime(start);
-        setEndTime(end);
-        setShowModal(true);
     };
 
     const handleRenameSubject = async () => {
@@ -192,6 +234,7 @@ const ClassScheduleCard = ({ subject }) => {
                             onChange={(e) => setNewName(e.target.value)}
                             onBlur={handleRenameSubject}
                             autoFocus
+                            className="rename-input"
                         />
                     ) : (
                         subject.Subject
@@ -276,7 +319,7 @@ const ClassScheduleCard = ({ subject }) => {
             </div>
 
             <div className="BelowBar">
-                <button className="add-btn" onClick={() => setShowModal(true)}>+ Add Class</button>
+                <button className="add-btn" onClick={( ) => setShowModal(true)}>+ Add Class</button>
                 
                 <CircularProgress subjectid={subject.$id} />
             </div>
@@ -284,6 +327,7 @@ const ClassScheduleCard = ({ subject }) => {
             {showModal && (
                 <div className="modal">
                     <div className="modal-content">
+                        {console.log("Here is the editIndex detail ",editIndex)}
                         <h2>{editIndex !== null ? "Edit Class" : "Add Class"}</h2>
 
                         <div className="input-group">
