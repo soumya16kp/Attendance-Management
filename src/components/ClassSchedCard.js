@@ -63,7 +63,6 @@ const ClassScheduleCard = ({ subject }) => {
         fetchInitialData();
     }, [subject.$id]);
 
-    // filtering Schedule Logic
     useEffect(() => {
         if (showAllPast) {
             const pastForThisSubject = allParsedEntries.filter(e =>
@@ -79,7 +78,7 @@ const ClassScheduleCard = ({ subject }) => {
             });
             setFilteredSchedule(lastWeekOnly);
         }
-        console.log("The filtered Schedule",filter)
+        console.log("The filtered Schedule",filteredSchedule)
     }, [showAllPast, showUpcoming, schedule, allParsedEntries]);
 
     const FindUser = async () => {
