@@ -8,53 +8,48 @@ const COLORS = ["#4CAF50", "#FFC107", "#E63946", "#2196F3", "#9C27B0", "#FF5722"
 const Dashboard = () => {
     const { subjects } = UseChecker();
 
-    // Calculate total attendance and absence percentage
     const totalClasses = subjects.reduce((sum, subject) => sum + subject.Schedule.filter(s => JSON.parse(s).status !== "Canceled").length, 0);
     const totalAttended = subjects.reduce((sum, subject) => sum + subject.Schedule.filter(s => JSON.parse(s).status === "Attended").length, 0);
     const totalAbsent = totalClasses - totalAttended;
     const attendancePercentage = totalClasses > 0 ? ((totalAttended / totalClasses) * 100).toFixed(2) : 0;
     const absentPercentage = totalClasses > 0 ? ((totalAbsent / totalClasses) * 100).toFixed(2) : 0;
 
-    // Function to process attendance data
+    
     const processAttendanceData = () => {
         return subjects.map(subject => ({
             name: subject.Subject,
             attended: subject.Schedule.filter(s => JSON.parse(s).status === "Attended").length,
             total: subject.Schedule.filter(s => JSON.parse(s).status !== "Canceled").length
+
         }));
     };
 
-    // Function to process pie chart data
     const processPieData = () => {
         return subjects.map(subject => {
             const totalClasses = subject.Schedule.filter(s => JSON.parse(s).status !== "Canceled").length;
             const attendedClasses = subject.Schedule.filter(s => JSON.parse(s).status === "Attended").length;
-            const percentage = totalClasses > 0 ? (attendedClasses / totalClasses) * 100 : 0;
+            const percentage = totalClasses > 0 ? Number(((attendedClasses / totalClasses) * 100).toFixed(1)) : 0;
             return { name: subject.Subject, value: percentage };
         });
     };
 
     const attendanceData = processAttendanceData();
     const pieData = processPieData();
-
-    // State for screen width detection
     const [isMobile, setIsMobile] = useState(false);
 
-    // Update screen size on load and resize
     useEffect(() => {
         const handleResize = () => {
-            setIsMobile(window.innerWidth <= 768); // Set mobile breakpoint at 768px
+            setIsMobile(window.innerWidth <= 768);
         };
 
         window.addEventListener("resize", handleResize);
-        handleResize(); // Run it on mount as well
+        handleResize(); 
 
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
     return (
         <div className="dashboard-container">
-            {/* Summary Section */}
             <div className="dashboard-summary">
                 <div className="summary-card">
                     <h3>Total Attendance</h3>
@@ -70,28 +65,35 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            {/* Attendance Overview */}
             <div className="dashboard-card">
                 <h2 className="dashboard-header">Attendance Overview</h2>
+                <div className="bar-chart-scroll">
                 <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={attendanceData} barGap={8}>
-                        {/* Conditionally render the XAxis based on screen width */}
                         {!isMobile && (
                             <XAxis dataKey="name" stroke="#555" />
                         )}
                         <YAxis />
-                        <Tooltip cursor={{ fill: "#444444" }} />
+                       <Tooltip
+                            formatter={(value, name) => [`${value}`, name === 'attended' ? 'Attended' : 'Total']}
+                            labelFormatter={(label) => (
+                                <span style={{ color: '#6e726eff', fontWeight: 'bold' }}>
+                                {label}
+                                </span>
+                            )}
+                        />
                         <Legend />
                         <Bar dataKey="attended" fill="#4CAF50" barSize={40} name="Attended" />
                         <Bar dataKey="total" fill="#FFC107" barSize={40} name="Total Classes" />
                     </BarChart>
                 </ResponsiveContainer>
+                </div>
             </div>
 
             {/* Circular Progress for All Classes */}
             <div className="dashboard-card chart-container">
                 <h2 className="dashboard-header">Attendance Distribution</h2>
-                <ResponsiveContainer width={300} height={350}>
+                <ResponsiveContainer width={350} height={400}>
                     <PieChart>
                         <Pie
                             data={pieData}

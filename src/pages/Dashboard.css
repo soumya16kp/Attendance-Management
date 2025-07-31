@@ -16,7 +16,7 @@
   justify-content: center;
   gap: 20px;
   width: 100%;
-  max-width: 900px;
+  max-width: 1200px;
   flex-wrap: wrap;
 }
 
@@ -27,8 +27,8 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
   text-align: center;
   flex: 1;
-  min-width: 180px;
-  max-width: 250px;
+  min-width: 200px;
+  max-width: 280px;
   color: #f0f0f0;
 }
 
@@ -68,7 +68,7 @@
 }
 
 .dashboard-header {
-  font-size: 18px;
+  font-size: 30px;
   font-weight: bold;
   color: #f0f0f0;
   margin-bottom: 12px;
@@ -105,7 +105,7 @@
   }
 
   .dashboard-header {
-    font-size: 16px;
+    font-size: 24px;
   }
 
   .summary-card h3 {
@@ -126,6 +126,26 @@
     display: none;
   }
 }
+
+.bar-chart-scroll {
+  width: 100%;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.bar-chart-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+
+.bar-chart-scroll::-webkit-scrollbar-thumb {
+  background-color: #555;
+  border-radius: 4px;
+}
+
+.bar-chart-scroll::-webkit-scrollbar-track {
+  background-color: #2a2a2a;
+}
+
 
 @media (max-width: 480px) {
   .dashboard-container {

@@ -18,7 +18,7 @@ const ClassScheduleCard = ({ subject }) => {
     const [newDay, setNewDay] = useState("");
     const [startTime, setStartTime] = useState("");
     const [endTime, setEndTime] = useState("");
-    const [editIndex, setEditIndex] = useState(null);
+    const [editEntry, setEditEntry] = useState(null); 
     const [showOptions, setShowOptions] = useState(false);
     const [rename, setRename] = useState(false);
     const [newName, setNewName] = useState(subject.Subject);
@@ -29,6 +29,7 @@ const ClassScheduleCard = ({ subject }) => {
     const now = new Date();
     const lastWeekStart = new Date();
     lastWeekStart.setDate(now.getDate() - 7);
+
 
     useEffect(() => {
         const fetchInitialData = async () => {
@@ -78,50 +79,54 @@ const ClassScheduleCard = ({ subject }) => {
             });
             setFilteredSchedule(lastWeekOnly);
         }
-        console.log("The filtered Schedule",filteredSchedule)
     }, [showAllPast, showUpcoming, schedule, allParsedEntries]);
 
     const FindUser = async () => {
         const session = await authService.getCurrentUser();
         return session?.$id;
     };
-    const handleEditClass = (index) => {
-        setEditIndex(index);
-        setNewDay(schedule[index].day);
-        const [start, end] = schedule[index].time.split(" - ");
+
+    // ✅ CHANGED: Accept entry directly instead of index
+    const handleEditClass = (entry) => {
+        setEditEntry(entry);
+        setNewDay(entry.day);
+        const [start, end] = entry.time.split(" - ");
         setStartTime(start);
         setEndTime(end);
         setShowModal(true);
     };
 
+    // ✅ CHANGED: Match and replace by object, not index
     const handleSaveClass = async () => {
         if (newDay && startTime && endTime) {
-            const updatedSchedule = [...schedule];
             const newEntry = {
                 day: newDay,
                 time: `${startTime} - ${endTime}`,
                 status: "Pending"
             };
 
-            if (editIndex !== null) {
-            
-                const oldEntry = schedule[editIndex];
-                updatedSchedule[editIndex] = newEntry;
+            let updatedSchedule;
+            if (editEntry) {
+                updatedSchedule = schedule.map(e =>
+                    e.day === editEntry.day &&
+                    e.time === editEntry.time &&
+                    e.status === editEntry.status
+                        ? newEntry
+                        : e
+                );
 
                 setAllParsedEntries(prev =>
-                    prev.map(entry => {
-                        if (
-                            entry.subjectName === subject.Subject &&
-                            entry.day === oldEntry.day &&
-                            entry.time === oldEntry.time
-                        ) {
-                            return { ...newEntry, subjectName: subject.Subject };
-                        }
-                        return entry;
-                    })
+                    prev.map(entry =>
+                        entry.subjectName === subject.Subject &&
+                        entry.day === editEntry.day &&
+                        entry.time === editEntry.time &&
+                        entry.status === editEntry.status
+                            ? { ...newEntry, subjectName: subject.Subject }
+                            : entry
+                    )
                 );
             } else {
-                updatedSchedule.push(newEntry);
+                updatedSchedule = [...schedule, newEntry];
                 setAllParsedEntries(prev => [
                     ...prev,
                     { ...newEntry, subjectName: subject.Subject }
@@ -133,39 +138,27 @@ const ClassScheduleCard = ({ subject }) => {
         }
     };
 
-    const handleDeleteClass = async (index) => {
-        const removedEntry = schedule[index];
-        const updatedSchedule = schedule.filter((_, i) => i !== index);
-        await updateSubject(updatedSchedule, status);
-
-        setAllParsedEntries(prev =>
-            prev.filter(entry =>
-                !(
-                    entry.subjectName === subject.Subject &&
-                    entry.day === removedEntry.day &&
-                    entry.time === removedEntry.time
-                )
-            )
-        );
-        setEditIndex(null);
-    };
-
+    // ✅ CHANGED: Find entry in schedule by matching properties
     const handleStatusChange = async (index, newStatus) => {
-            const updatedSchedule = [...schedule];
-            updatedSchedule[index].status = newStatus;
-            
-            const newAllEntries = allParsedEntries.map(entry => {
-                if (
-                    entry.subjectName === subject.Subject &&
-                    entry.day === updatedSchedule[index].day &&
-                    entry.time === updatedSchedule[index].time
-                ) {
-                    return { ...entry, status: newStatus };
-                }
-                return entry;
-            });
-        setAllParsedEntries(newAllEntries);
-            
+        const entry = filteredSchedule[index];
+        const updatedSchedule = schedule.map(e =>
+            e.day === entry.day &&
+            e.time === entry.time &&
+            e.status === entry.status
+                ? { ...e, status: newStatus }
+                : e
+        );
+
+        const updatedEntries = allParsedEntries.map(e =>
+            e.subjectName === subject.Subject &&
+            e.day === entry.day &&
+            e.time === entry.time &&
+            e.status === entry.status
+                ? { ...e, status: newStatus }
+                : e
+        );
+
+        setAllParsedEntries(updatedEntries);
         await updateSubject(updatedSchedule, status);
     };
 
@@ -185,6 +178,31 @@ const ClassScheduleCard = ({ subject }) => {
         } catch (error) {
             console.error("Error updating schedule:", error);
         }
+    };
+
+    const handleDeleteClass = async (index) => {
+        const removedEntry = filteredSchedule[index]; // ✅ CHANGED to delete correct item
+        const updatedSchedule = schedule.filter(
+            e =>
+                !(
+                    e.day === removedEntry.day &&
+                    e.time === removedEntry.time &&
+                    e.status === removedEntry.status
+                )
+        );
+
+        await updateSubject(updatedSchedule, status);
+
+        setAllParsedEntries(prev =>
+            prev.filter(entry =>
+                !(
+                    entry.subjectName === subject.Subject &&
+                    entry.day === removedEntry.day &&
+                    entry.time === removedEntry.time
+                )
+            )
+        );
+        setEditEntry(null);
     };
 
     const handleRenameSubject = async () => {
@@ -218,7 +236,7 @@ const ClassScheduleCard = ({ subject }) => {
         setNewDay("");
         setStartTime("");
         setEndTime("");
-        setEditIndex(null);
+        setEditEntry(null);
         setShowModal(false);
     };
 
@@ -326,8 +344,7 @@ const ClassScheduleCard = ({ subject }) => {
             {showModal && (
                 <div className="modal">
                     <div className="modal-content">
-                        {console.log("Here is the editIndex detail ",editIndex)}
-                        <h2>{editIndex !== null ? "Edit Class" : "Add Class"}</h2>
+                        <h2>{editEntry !== null ? "Edit Class" : "Add Class"}</h2>
 
                         <div className="input-group">
                             <label>Select Date:</label>
