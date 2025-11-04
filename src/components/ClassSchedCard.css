@@ -1,13 +1,13 @@
 /* Card Styling */
 .card {
     position: relative; /* Ensures internal positioning */
-    margin: 20px;
+    margin: 15px;
     background: white;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     border-radius: 12px;
     padding: 20px;
     width: 330px;
-    height: 450px;
+    height: 420px;
     text-align: center;
     overflow: hidden; /* Prevents expansion */
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -320,3 +320,13 @@
 
 .save-btn:hover { background: #0056b3; }
 .close-btn:hover { background: #999; }
+
+
+.no-classes {
+    z-index: 100;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #888;
+  padding: 1rem;
+}

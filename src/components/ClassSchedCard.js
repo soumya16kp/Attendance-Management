@@ -1,7 +1,7 @@
 import  { useEffect, useState } from "react";
 import "./ClassSchedCard.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faTrash, faEllipsisV } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faTrash, faEllipsisV,faCalendarTimes } from "@fortawesome/free-solid-svg-icons";
 import CircularProgress from "./Calculator";
 import appwriteService from "../appwrite/config";
 import authService from "../appwrite/auth";
@@ -138,7 +138,6 @@ const ClassScheduleCard = ({ subject }) => {
         }
     };
 
-    // ✅ CHANGED: Find entry in schedule by matching properties
     const handleStatusChange = async (index, newStatus) => {
         const entry = filteredSchedule[index];
         const updatedSchedule = schedule.map(e =>
@@ -278,28 +277,6 @@ const ClassScheduleCard = ({ subject }) => {
             </div>
 
             <div className="schedule-container">
-                <div>
-                    {showUpcoming ? 
-                    <button
-                        className="secondary-btn"
-                        onClick={() => {
-                            setShowAllPast(true);
-                            setShowUpcoming(false);
-                        }}
-                    >
-                        Show All Past Classes
-                    </button>:
-                        <button
-                        className="secondary-btn"
-                        onClick={() => {
-                            setShowAllPast(false);
-                            setShowUpcoming(true);
-                        }}
-                    >
-                        Show Upcoming Classes
-                    </button>
-                    }
-                </div>
                 <div className="schedule">
                     {filteredSchedule.length > 0 ? (
                         filteredSchedule.map((entry, index) => (
@@ -330,7 +307,12 @@ const ClassScheduleCard = ({ subject }) => {
                             </div>
                         ))
                     ) : (
-                        <p>No classes scheduled</p>
+                        <div>
+                            <p className="no-classes">
+                            <FontAwesomeIcon icon={faCalendarTimes} /> No classes scheduled
+                            </p>
+                        {console.log("Hello")}
+                        </div>
                     )}
                 </div>
             </div>

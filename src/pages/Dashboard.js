@@ -90,7 +90,6 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            {/* Circular Progress for All Classes */}
             <div className="dashboard-card chart-container">
                 <h2 className="dashboard-header">Attendance Distribution</h2>
                 <ResponsiveContainer width={350} height={400}>
