@@ -1,7 +1,7 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./ClassSchedCard.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faTrash, faEllipsisV,faCalendarTimes } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faTrash, faEllipsisV, faCalendarTimes } from "@fortawesome/free-solid-svg-icons";
 import CircularProgress from "./Calculator";
 import appwriteService from "../appwrite/config";
 import authService from "../appwrite/auth";
@@ -18,8 +18,9 @@ const ClassScheduleCard = ({ subject }) => {
     const [newDay, setNewDay] = useState("");
     const [startTime, setStartTime] = useState("");
     const [endTime, setEndTime] = useState("");
-    const [editEntry, setEditEntry] = useState(null); 
+    const [editEntry, setEditEntry] = useState(null);
     const [showOptions, setShowOptions] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [rename, setRename] = useState(false);
     const [newName, setNewName] = useState(subject.Subject);
     const [showUpcoming, setShowUpcoming] = useState(true);
@@ -27,8 +28,8 @@ const ClassScheduleCard = ({ subject }) => {
 
     const statusOptions = ["Attended", "Absent", "Canceled", "Pending"];
     const now = new Date();
-    const lastWeekStart = new Date();
-    lastWeekStart.setDate(now.getDate() - 7);
+    const pastRangeStart = new Date();
+    pastRangeStart.setDate(now.getDate() - 14);
 
 
     useEffect(() => {
@@ -73,11 +74,11 @@ const ClassScheduleCard = ({ subject }) => {
         } else if (showUpcoming) {
             setFilteredSchedule(schedule.filter(e => new Date(e.day) >= now));
         } else {
-            const lastWeekOnly = schedule.filter(e => {
+            const pastDaysOnly = schedule.filter(e => {
                 const d = new Date(e.day);
-                return d >= lastWeekStart && d < now;
+                return d >= pastRangeStart && d < now;
             });
-            setFilteredSchedule(lastWeekOnly);
+            setFilteredSchedule(pastDaysOnly);
         }
     }, [showAllPast, showUpcoming, schedule, allParsedEntries]);
 
@@ -109,8 +110,8 @@ const ClassScheduleCard = ({ subject }) => {
             if (editEntry) {
                 updatedSchedule = schedule.map(e =>
                     e.day === editEntry.day &&
-                    e.time === editEntry.time &&
-                    e.status === editEntry.status
+                        e.time === editEntry.time &&
+                        e.status === editEntry.status
                         ? newEntry
                         : e
                 );
@@ -118,9 +119,9 @@ const ClassScheduleCard = ({ subject }) => {
                 setAllParsedEntries(prev =>
                     prev.map(entry =>
                         entry.subjectName === subject.Subject &&
-                        entry.day === editEntry.day &&
-                        entry.time === editEntry.time &&
-                        entry.status === editEntry.status
+                            entry.day === editEntry.day &&
+                            entry.time === editEntry.time &&
+                            entry.status === editEntry.status
                             ? { ...newEntry, subjectName: subject.Subject }
                             : entry
                     )
@@ -142,17 +143,17 @@ const ClassScheduleCard = ({ subject }) => {
         const entry = filteredSchedule[index];
         const updatedSchedule = schedule.map(e =>
             e.day === entry.day &&
-            e.time === entry.time &&
-            e.status === entry.status
+                e.time === entry.time &&
+                e.status === entry.status
                 ? { ...e, status: newStatus }
                 : e
         );
 
         const updatedEntries = allParsedEntries.map(e =>
             e.subjectName === subject.Subject &&
-            e.day === entry.day &&
-            e.time === entry.time &&
-            e.status === entry.status
+                e.day === entry.day &&
+                e.time === entry.time &&
+                e.status === entry.status
                 ? { ...e, status: newStatus }
                 : e
         );
@@ -263,13 +264,14 @@ const ClassScheduleCard = ({ subject }) => {
                     </button>
                     {showOptions && (
                         <div className="dropdown-menu">
-                            <button onClick={() => setRename(true)}>Rename</button>
-                            <button onClick={handleDeleteSubject}>Delete</button>
+                            <button onClick={() => { setRename(true); setShowOptions(false); }}>Rename</button>
+                            <button onClick={() => { setShowDeleteConfirm(true); setShowOptions(false); }}>Delete</button>
                             <button onClick={() => {
                                 setShowUpcoming(!showUpcoming);
                                 setShowAllPast(false);
+                                setShowOptions(false);
                             }}>
-                                {showUpcoming ? "Show Last Week" : "Show Upcoming"}
+                                {showUpcoming ? "Show Last 14 Days" : "Show Upcoming"}
                             </button>
                         </div>
                     )}
@@ -297,7 +299,7 @@ const ClassScheduleCard = ({ subject }) => {
                                 </select>
 
                                 <div className="actions">
-                                    <button className="icon-btn edit-btn" onClick={() => handleEditClass(index)}>
+                                    <button className="icon-btn edit-btn" onClick={() => handleEditClass(entry)}>
                                         <FontAwesomeIcon icon={faEdit} />
                                     </button>
                                     <button className="icon-btn delete-btn" onClick={() => handleDeleteClass(index)}>
@@ -309,17 +311,17 @@ const ClassScheduleCard = ({ subject }) => {
                     ) : (
                         <div>
                             <p className="no-classes">
-                            <FontAwesomeIcon icon={faCalendarTimes} /> No classes scheduled
+                                <FontAwesomeIcon icon={faCalendarTimes} /> No classes scheduled
                             </p>
-                        {console.log("Hello")}
+                            {console.log("Hello")}
                         </div>
                     )}
                 </div>
             </div>
 
             <div className="BelowBar">
-                <button className="add-btn" onClick={( ) => setShowModal(true)}>+ Add Class</button>
-                
+                <button className="add-btn" onClick={() => setShowModal(true)}>+ Add Class</button>
+
                 <CircularProgress subjectid={subject.$id} />
             </div>
 
@@ -360,6 +362,23 @@ const ClassScheduleCard = ({ subject }) => {
                         <div className="modal-buttons">
                             <button className="save-btn" onClick={handleSaveClass}>Save</button>
                             <button className="close-btn" onClick={closeModal}>Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {showDeleteConfirm && (
+                <div className="modal confirm-modal-overlay">
+                    <div className="confirm-modal-content">
+                        <div className="confirm-modal-icon">⚠️</div>
+                        <h2 className="confirm-modal-title">Delete Subject</h2>
+                        <p className="confirm-modal-message">
+                            Are you sure you want to delete <strong>{subject.Subject}</strong>?
+                            <span className="confirm-modal-sub">This action cannot be undone.</span>
+                        </p>
+                        <div className="confirm-modal-buttons">
+                            <button className="close-btn" onClick={() => setShowDeleteConfirm(false)}>Cancel</button>
+                            <button className="delete-confirm-btn" onClick={() => { handleDeleteSubject(); setShowDeleteConfirm(false); }}>Delete</button>
                         </div>
                     </div>
                 </div>

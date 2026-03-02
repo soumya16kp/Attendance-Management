@@ -1,6 +1,7 @@
 /* Card Styling */
 .card {
-    position: relative; /* Ensures internal positioning */
+    position: relative;
+    /* Ensures internal positioning */
     margin: 15px;
     background: white;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -9,7 +10,8 @@
     width: 330px;
     height: 420px;
     text-align: center;
-    overflow: hidden; /* Prevents expansion */
+    overflow: hidden;
+    /* Prevents expansion */
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -70,8 +72,15 @@
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-5px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .dropdown-menu button {
@@ -153,10 +162,25 @@
     transition: background 0.2s ease-in-out;
 }
 
-.status.attended { background: #4CAF50; color: white; }
-.status.absent { background: #FF9800; color: white; }
-.status.canceled { background: #E63946; color: white; }
-.status.pending { background: #9E9E9E; color: white; }
+.status.attended {
+    background: #4CAF50;
+    color: white;
+}
+
+.status.absent {
+    background: #FF9800;
+    color: white;
+}
+
+.status.canceled {
+    background: #E63946;
+    color: white;
+}
+
+.status.pending {
+    background: #9E9E9E;
+    color: white;
+}
 
 /* Actions (Edit & Delete Icons) */
 .actions {
@@ -245,20 +269,29 @@
 
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1); }
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 .input-group {
     margin-bottom: 15px;
     text-align: left;
 }
-.BelowBar{
-    display:flex;
+
+.BelowBar {
+    display: flex;
     flex-direction: row;
     padding-top: 10px;
     justify-content: space-between;
 }
+
 .input-group label {
     display: block;
     font-weight: bold;
@@ -286,7 +319,9 @@
     justify-content: space-between;
 }
 
-.save-btn, .close-btn {
+.save-btn,
+.close-btn,
+.delete-confirm-btn {
     padding: 10px 15px;
     border: none;
     border-radius: 6px;
@@ -294,6 +329,7 @@
     cursor: pointer;
     transition: 0.3s;
 }
+
 .secondary-btn {
     background-color: #444;
     color: #fff;
@@ -304,6 +340,7 @@
     cursor: pointer;
     transition: background-color 0.2s ease-in-out;
 }
+
 .secondary-btn:hover {
     background-color: #666;
 }
@@ -318,15 +355,100 @@
     color: black;
 }
 
-.save-btn:hover { background: #0056b3; }
-.close-btn:hover { background: #999; }
+.save-btn:hover {
+    background: #0056b3;
+}
+
+.close-btn:hover {
+    background: #999;
+}
+
+.delete-confirm-btn {
+    background: #E63946;
+    color: white;
+}
+
+.delete-confirm-btn:hover {
+    background: #b02030;
+}
 
 
 .no-classes {
     z-index: 100;
-  text-align: center;
-  font-size: 1rem;
-  font-weight: 500;
-  color: #888;
-  padding: 1rem;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #888;
+    padding: 1rem;
+}
+
+/* ── Delete Confirmation Modal ────────────────────────── */
+@keyframes confirmSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-18px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.confirm-modal-overlay {
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+}
+
+.confirm-modal-content {
+    background: #fff;
+    border-radius: 14px;
+    padding: 32px 30px 28px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.22);
+    border-top: 4px solid #E63946;
+    text-align: center;
+    animation: confirmSlideIn 0.25s ease;
+}
+
+.confirm-modal-icon {
+    font-size: 2.4rem;
+    margin-bottom: 12px;
+    line-height: 1;
+}
+
+.confirm-modal-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 10px;
+}
+
+.confirm-modal-message {
+    font-size: 0.97rem;
+    color: #444;
+    line-height: 1.6;
+    margin: 0 0 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.confirm-modal-message strong {
+    color: #1a1a1a;
+}
+
+.confirm-modal-sub {
+    font-size: 0.84rem;
+    color: #999;
+    margin-top: 4px;
+}
+
+.confirm-modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 24px;
 }
